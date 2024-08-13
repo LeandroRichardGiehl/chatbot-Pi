@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot</title>
+    <link rel="stylesheet" href="chatbot.css">
+</head>
+<body>
+    <!-- Botão para abrir/fechar o chatbot -->
+    <div id="chatbot-toggle" onclick="toggleChatbot()">
+        <div class="chatbot-icon">💬</div>
+    </div>
+
+    <!-- Chatbot -->
+    <div id="chatbot">
+        <div id="chatbot-header">
+            <h2>Chatbot</h2>
+            <button onclick="toggleChatbot()">❌</button>
+        </div>
+        <div id="chatbot-body"></div>
+        <div id="chatbot-footer">
+            <input id="user-input" type="text" placeholder="Digite sua mensagem...">
+            <button onclick="sendMessage()">Enviar</button>
+        </div>
+    </div>
+
+    <script src="chatbot.js"></script>
+</body>
+</html>
