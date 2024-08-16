@@ -1,4 +1,3 @@
-// Define the categories and disease information
 const categories = {
     "prevenção": [
         "Como posso prevenir doenças sexualmente transmissíveis?",
@@ -34,7 +33,18 @@ const responses = {
 
 const fallbackResponse = "Desculpe, não entendi sua pergunta. Lembre-se, é sempre importante consultar um médico para orientações específicas sobre DSTs.";
 
-// Function to send a message
+function saveChatState() {
+    const chatBody = document.getElementById('chatbot-body');
+    sessionStorage.setItem('chatContent', chatBody.innerHTML);
+}
+
+function loadChatState() {
+    const savedContent = sessionStorage.getItem('chatContent');
+    if (savedContent) {
+        document.getElementById('chatbot-body').innerHTML = savedContent;
+    }
+}
+
 function sendMessage(userInput) {
     if (!userInput) {
         userInput = document.getElementById('user-input').value.toLowerCase();
@@ -45,7 +55,6 @@ function sendMessage(userInput) {
 
     let botResponse = fallbackResponse;
 
-    // Match user input with predefined responses
     for (const [key, value] of Object.entries(responses)) {
         if (userInput.includes(key)) {
             botResponse = value;
@@ -53,7 +62,6 @@ function sendMessage(userInput) {
         }
     }
 
-    // Check if user input matches a disease for symptoms
     for (const [disease, symptoms] of Object.entries(diseases)) {
         if (userInput.includes(disease)) {
             botResponse = `Sintomas da ${capitalizeFirstLetter(disease)}: ${symptoms}`;
@@ -65,11 +73,9 @@ function sendMessage(userInput) {
 
     document.getElementById('user-input').value = '';
 
-    // Show the options again after each response
     setTimeout(showCategoryOptions, 1000);
 }
 
-// Function to append a message to the chat
 function appendMessage(text, className) {
     const messageElement = document.createElement('div');
     messageElement.className = `message ${className}`;
@@ -79,7 +85,6 @@ function appendMessage(text, className) {
     document.getElementById('chatbot-body').scrollTop = document.getElementById('chatbot-body').scrollHeight;
 }
 
-// Function to show category options
 function showCategoryOptions() {
     const categoriesHtml = `
         <button class="category-button" onclick="showCategoryQuestions('prevenção')">Prevenção</button>
@@ -89,10 +94,11 @@ function showCategoryOptions() {
         <button class="category-button" onclick="handleOptionClick('se conectar com uma profissional')">Se conectar com uma profissional</button>
     `;
 
-    appendMessage(`Selecione uma categoria de ajuda:<br>${categoriesHtml}`, 'bot-message');
+    if (!document.getElementById('chatbot-body').innerHTML.includes(categoriesHtml)) {
+        appendMessage(`Selecione uma categoria de ajuda:<br>${categoriesHtml}`, 'bot-message');
+    }
 }
 
-// Function to show category questions
 function showCategoryQuestions(category) {
     let response;
     if (category === 'prevenção') {
@@ -112,7 +118,6 @@ function showCategoryQuestions(category) {
     appendMessage(response, 'bot-message');
 }
 
-// Function to show the list of diseases
 function showDiseaseList() {
     const diseasesHtml = Object.keys(diseases).map(disease => 
         `<button class="option-button" onclick="sendMessage('${disease}')">${capitalizeFirstLetter(disease)}</button>`
@@ -121,7 +126,6 @@ function showDiseaseList() {
     appendMessage(`Escolha uma doença para ver os sintomas:<br>${diseasesHtml}`, 'bot-message');
 }
 
-// Function to handle option clicks
 function handleOptionClick(option) {
     if (option.includes("se conectar com uma profissional")) {
         appendMessage("Você será conectado com uma profissional em breve.", 'bot-message');
@@ -130,18 +134,30 @@ function handleOptionClick(option) {
     }
 }
 
-// Function to toggle the chatbot
 function toggleChatbot() {
     const chatbot = document.getElementById('chatbot');
+    const toggleButton = document.getElementById('chatbot-toggle');
+    
     if (chatbot) {
         chatbot.classList.toggle('active');
+
         if (chatbot.classList.contains('active')) {
             showCategoryOptions();
+        }
+
+        toggleButton.style.opacity = chatbot.classList.contains('active') ? '0' : '1';
+        toggleButton.style.transform = chatbot.classList.contains('active') ? 'scale(0)' : 'scale(1)';
+
+        if (!chatbot.classList.contains('active')) {
+            saveChatState();
         }
     }
 }
 
-// Function to capitalize the first letter of a string
+document.addEventListener('DOMContentLoaded', (event) => {
+    loadChatState();
+});
+
 function capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
 }
